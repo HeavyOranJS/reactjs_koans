@@ -35,6 +35,36 @@ var React = require("react");
 //                   Or try to create your own tests.
 //                   Check out `test/05-Challange-GroceryList.js` for tests to this part.
 
+// TODO: refactor this - aka extra 1
+class GroceryAdd extends React.Component {
+  constructor(props){
+    super(props)
+
+    this.addGroceryItem = this.addGroceryItem.bind(this)
+  }
+
+  addGroceryItem() {
+    let newGroceryItem = 
+    { 
+      name: this.props.newGroceryName,
+      completed: false 
+    };
+
+    this.props.addItem(newGroceryItem)
+  }
+
+
+  render(){
+    this.addGroceryItem = this.addGroceryItem.bind(this);
+    let newProductAddButton = <button className='add-product' onClick={this.addGroceryItem} disabled={this.newGroceryItem===''}>Add new Product</button>;
+
+    return (
+      <div> 
+        {newProductAddButton}
+      </div>
+    )
+  }
+}
 
 class GroceryList extends React.Component {
   constructor(props) {
@@ -49,31 +79,25 @@ class GroceryList extends React.Component {
       newGroceryName: ""
     };
 
-    this.addGroceryItem = this.addGroceryItem.bind(this);
     this.clearList = this.clearList.bind(this);
     this.inputChanged = this.inputChanged.bind(this);
   }
 
-  inputChanged(event) {
-    this.setState({ newGroceryName: event.target.value });
-  }
-
-  addGroceryItem() {
-    if(this.state.newGroceryName) {
-      let newGroceryItem = 
-        { 
-          name: this.state.newGroceryName,
-          completed: false 
-        };
+  addGroceryItemCallback(value) {
+    if(this.newGroceryName) {
 
       this.setState({
-        groceries: this.state.groceries.concat([newGroceryItem])
+        groceries: this.state.groceries.concat([value])
       });
     }
   }
 
   clearList(event) {
     this.setState({groceries: []});
+  }
+ 
+  inputChanged(event) {
+    this.setState({ newGroceryName: event.target.value });
   }
 
   // Fill the definition of the following method to allow completing each item
@@ -83,7 +107,6 @@ class GroceryList extends React.Component {
     new_groceries[groceryIndex].completed = !new_groceries[groceryIndex].completed;
     this.setState({groceries: new_groceries});
     console.log(this.state.groceries)
-    // Put your code here
   }
 
   render() {
@@ -101,7 +124,6 @@ class GroceryList extends React.Component {
     }
 
     newProductInput = <input className='new-item' type="text" onChange={this.inputChanged}/>;
-    newProductAddButton = <button className='add-product' onClick={this.addGroceryItem} disabled={this.newGroceryItem===''}>Add new Product</button>;
     clearListButton = <button className='clear-list' onClick={this.clearList}>Clear the List</button>;
 
     return (
@@ -110,8 +132,16 @@ class GroceryList extends React.Component {
           {groceriesComponents}
         </ul>
         {newProductInput}
-        {newProductAddButton}
         {clearListButton}
+        <GroceryAdd 
+          newGroceryName={this.state.newGroceryName} 
+          addItem=
+          {
+            (newGroceryItem) => this.setState(
+              {groceries: this.state.groceries.concat([newGroceryItem])}
+            )
+          }
+        />
       </div>
     );
   }
